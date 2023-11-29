@@ -120,7 +120,9 @@ def main(cfg: InferenceConfig):
 
     with trace("inference"):
         keys, preds = inference(cfg.duration, test_dataloader, model, device, use_amp=cfg.use_amp)
-
+    np.save(Path(cfg.dir.output_dir)/cfg.exp_name/"keys.npy", np.array(keys))
+    np.save(Path(cfg.dir.output_dir)/cfg.exp_name/"preds.npy", preds)
+    
     with trace("make submission"):
         sub_df = make_submission(
             keys,
