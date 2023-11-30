@@ -96,13 +96,23 @@ def main(cfg: PrepareDataConfig):
             )
         else:
             raise ValueError(f"Invalid phase: {cfg.phase}")
-
+        
+        mean=series_lf.drop("step","timestamp","anglez").group_by("series_id").mean().rename({"enmo": "enmo_mean"})#.collect(streaming=True)
+        std=series_lf.drop("step","timestamp","anglez").group_by("series_id").agg(pl.col("enmo").std()).rename({"enmo": "enmo_std"})#.collect(streaming=True)
+        series_lf=series_lf.join(mean,how="left",on=["series_id"]).join(std,how="left",on=["series_id"])
+        #max=series_lf.drop("step","timestamp","anglez").group_by("series_id").max().rename({"enmo": "enmo_max"})
+        #series_lf=series_lf.join(max,how="left",on=["series_id"])
+        series_lf=series_lf.with_columns(
+            pl.col("anglez").rolling_mean(2).backward_fill(),
+            pl.col("enmo").rolling_mean(2).backward_fill(),
+        )
         # preprocess
         series_df = (
             series_lf.with_columns(
                 pl.col("timestamp").str.to_datetime("%Y-%m-%dT%H:%M:%S%z"),
                 deg_to_rad(pl.col("anglez")).alias("anglez_rad"),
-                (pl.col("anglez") - ANGLEZ_MEAN) / ANGLEZ_STD,
+                #(pl.col("anglez") - ANGLEZ_MEAN) / ANGLEZ_STD,
+                ((pl.col("enmo")-pl.col("enmo_mean"))/pl.col("enmo_std")).alias("enmo")
                 (pl.col("enmo") - ENMO_MEAN) / ENMO_STD,
             )
             .select(
