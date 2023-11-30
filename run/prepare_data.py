@@ -111,9 +111,9 @@ def main(cfg: PrepareDataConfig):
             series_lf.with_columns(
                 pl.col("timestamp").str.to_datetime("%Y-%m-%dT%H:%M:%S%z"),
                 deg_to_rad(pl.col("anglez")).alias("anglez_rad"),
-                #(pl.col("anglez") - ANGLEZ_MEAN) / ANGLEZ_STD,
-                ((pl.col("enmo")-pl.col("enmo_mean"))/pl.col("enmo_std")).alias("enmo")
-                (pl.col("enmo") - ENMO_MEAN) / ENMO_STD,
+                (pl.col("anglez") - ANGLEZ_MEAN) / ANGLEZ_STD,
+                ((pl.col("enmo")-pl.col("enmo_mean"))/pl.col("enmo_std")).alias("enmo"),
+                #(pl.col("enmo") - ENMO_MEAN) / ENMO_STD,
             )
             .select(
                 [
