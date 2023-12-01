@@ -11,7 +11,6 @@ from pytorch_lightning.callbacks import (
     RichProgressBar,
 )
 from pytorch_lightning.loggers import WandbLogger
-from lightning.pytorch.strategies import DeepSpeedStrategy
 
 from src.conf import TrainConfig
 from src.datamodule import SleepDataModule
@@ -59,11 +58,6 @@ def main(cfg: TrainConfig):
         # num_nodes=cfg.training.num_gpus,
         accelerator=cfg.trainer.accelerator,
         precision=16 if cfg.trainer.use_amp else 32,
-        strategy=DeepSpeedStrategy(
-        stage=3,
-        offload_optimizer=True,
-        offload_parameters=True,
-        ),
         # training
         fast_dev_run=cfg.trainer.debug,  # run only 1 train batch and 1 val batch
         max_epochs=cfg.trainer.epochs,

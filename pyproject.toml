@@ -34,8 +34,6 @@ dependencies = [
     "rich>=13.6.0",
     "types-tqdm>=4.66.0.2",
     "optuna>=3.4.0",
-    "lightning>=1.9.5",
-    "deepspeed>=0.12.3",
 ]
 readme = "README.md"
 requires-python = ">= 3.10"
