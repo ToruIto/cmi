@@ -3,6 +3,25 @@ from typing import Callable, Optional
 import torch
 import torch.nn as nn
 
+class Permute(nn.Module):
+    def __init__(self, *dims):
+        super(Permute, self).__init__()
+        self.dims = dims
+
+    def forward(self, x):
+        return x.permute(self.dims)
+
+class LSTMLayer(nn.Module):
+    def __init__(self, input_size, hidden_size):
+        super(LSTMLayer, self).__init__()
+        self.lstm = nn.LSTM(input_size, hidden_size, batch_first=True)
+
+    def forward(self, x):
+        # LSTMの出力からデータ部分のみを返す
+        output, _ = self.lstm(x)
+        return output
+
+
 
 # ref: https://github.com/analokmaus/kaggle-g2net-public/tree/main/models1d_pytorch
 class CNNSpectrogram(nn.Module):
@@ -33,7 +52,8 @@ class CNNSpectrogram(nn.Module):
                     kernel_size=kernel_sizes[i],
                     stride=stride,
                     padding=(kernel_sizes[i] - 1) // 2,
-                )
+                ),
+                Permute(0,2,1),LSTMLayer(input_size=base_filters[0], hidden_size=base_filters[0]),Permute(0,2,1)
             ]
             if len(base_filters) > 1:
                 for j in range(len(base_filters) - 1):
