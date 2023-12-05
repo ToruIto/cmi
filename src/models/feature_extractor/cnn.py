@@ -52,8 +52,8 @@ class CNNSpectrogram(nn.Module):
                     kernel_size=kernel_sizes[i],
                     stride=stride,
                     padding=(kernel_sizes[i] - 1) // 2,
-                ),
-                Permute(0,2,1),LSTMLayer(input_size=base_filters[0], hidden_size=base_filters[0]),Permute(0,2,1)
+                )#,
+                #Permute(0,2,1),LSTMLayer(input_size=base_filters[0], hidden_size=base_filters[0]),Permute(0,2,1)
             ]
             if len(base_filters) > 1:
                 for j in range(len(base_filters) - 1):
